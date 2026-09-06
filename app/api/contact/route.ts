@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 // POST /api/contact
 // Note: Backend responsibilities (validation, rate limiting, Turnstile verification, Resend email)
 // have been offloaded to the FastAPI service at http://localhost:8000/api/contact.
@@ -24,12 +26,18 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(payload),
     })
 
-    const data = await response.json()
+    const responseText = await response.text()
+    let data: any
+    try {
+      data = JSON.parse(responseText)
+    } catch {
+      data = { error: responseText || `Backend returned HTTP ${response.status}` }
+    }
     return NextResponse.json(data, { status: response.status })
   } catch (error) {
     console.error('[Next.js API Contact Proxy] Error forwarding request to FastAPI:', error)
     return NextResponse.json(
-      { error: 'FastAPI backend service is currently unreachable at http://localhost:8000' },
+      { error: `FastAPI backend service is currently unreachable at ${targetEndpoint}` },
       { status: 503 }
     )
   }
