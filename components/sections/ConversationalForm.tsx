@@ -27,7 +27,12 @@ type FormState = {
 
 const initialState: FormState = { name: '', email: '', service: '', message: '', company: '' }
 
-export default function ConversationalForm() {
+type ConversationalFormProps = {
+  turnstileSiteKey?: string
+}
+
+export default function ConversationalForm({ turnstileSiteKey }: ConversationalFormProps = {}) {
+  const activeSiteKey = turnstileSiteKey || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.TURNSTILE_SITE_KEY
   const [stepIndex, setStepIndex] = useState(0)
   const [values, setValues] = useState<FormState>(initialState)
   const [error, setError] = useState<string | null>(null)
@@ -96,9 +101,7 @@ export default function ConversationalForm() {
     setStatus('submitting')
     setError(null)
     try {
-      const endpoint = process.env.NEXT_PUBLIC_API_URL 
-        ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/api/contact` 
-        : '/api/contact'
+      const endpoint = '/api/contact'
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,7 +116,8 @@ export default function ConversationalForm() {
       }
       setStatus('success')
       setServerMessage(data.message ?? 'Message sent \u2014 we\u2019ll reply within 24h.')
-    } catch {
+    } catch (err) {
+      console.error('[ConversationalForm Submission Error]:', err)
       setStatus('error')
       setServerMessage('Connection dropped \u2014 check your network and retry.')
     }
@@ -230,9 +234,9 @@ export default function ConversationalForm() {
                 <p className="text-muted-foreground">
                   We&apos;ll verify you&apos;re human, then send this to our team.
                 </p>
-                {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.TURNSTILE_SITE_KEY ? (
+                {activeSiteKey ? (
                   <Turnstile
-                    siteKey={(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.TURNSTILE_SITE_KEY)!}
+                    siteKey={activeSiteKey}
                     onSuccess={setTurnstileToken}
                     onExpire={() => setTurnstileToken(null)}
                     options={{ theme: 'dark' }}

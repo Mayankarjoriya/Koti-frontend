@@ -7,6 +7,7 @@ export const metadata: Metadata = {
 }
 
 export default function ContactPage() {
+  const siteKey = process.env.TURNSTILE_SITE_KEY
   return (
     <main className="pt-16">
       <section className="mx-auto max-w-2xl px-6 py-20 md:py-28">
@@ -21,7 +22,7 @@ export default function ContactPage() {
         </p>
 
         <div className="mt-12">
-          <ConversationalForm />
+          <ConversationalForm turnstileSiteKey={siteKey} />
         </div>
       </section>
     </main>
