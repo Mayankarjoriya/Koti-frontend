@@ -96,8 +96,9 @@ export default function ConversationalForm() {
     setStatus('submitting')
     setError(null)
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      const endpoint = `${baseUrl.replace(/\/$/, '')}/api/contact`
+      const endpoint = process.env.NEXT_PUBLIC_API_URL 
+        ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/api/contact` 
+        : '/api/contact'
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -229,9 +230,9 @@ export default function ConversationalForm() {
                 <p className="text-muted-foreground">
                   We&apos;ll verify you&apos;re human, then send this to our team.
                 </p>
-                {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? (
+                {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.TURNSTILE_SITE_KEY ? (
                   <Turnstile
-                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                    siteKey={(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.TURNSTILE_SITE_KEY)!}
                     onSuccess={setTurnstileToken}
                     onExpire={() => setTurnstileToken(null)}
                     options={{ theme: 'dark' }}

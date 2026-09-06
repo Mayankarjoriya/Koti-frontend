@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // have been offloaded to the FastAPI service at http://localhost:8000/api/contact.
 // This route acts as a server-side proxy to the FastAPI backend.
 export async function POST(req: NextRequest) {
-  const backendUrl = process.env.FASTAPI_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+  const backendUrl = process.env.FASTAPI_BACKEND_URL || process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
   const targetEndpoint = `${backendUrl.replace(/\/$/, '')}/api/contact`
 
   try {
