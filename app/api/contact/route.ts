@@ -10,13 +10,18 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
+    const payload = {
+      ...body,
+      turnstile_token: body.turnstile_token || body.turnstileToken,
+      turnstileToken: body.turnstileToken || body.turnstile_token,
+    }
     const response = await fetch(targetEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-forwarded-for': req.headers.get('x-forwarded-for') ?? '',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     })
 
     const data = await response.json()

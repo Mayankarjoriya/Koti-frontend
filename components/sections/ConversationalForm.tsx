@@ -105,7 +105,10 @@ export default function ConversationalForm({ turnstileSiteKey }: ConversationalF
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify({
+          ...parsed.data,
+          turnstile_token: turnstileToken,
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
